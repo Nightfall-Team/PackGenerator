@@ -43,6 +43,5 @@ bin/
 
 ### Project Specific Files ###
 resource-pack-build/
-nfminestompack.zip
 sha1.txt
-pack.png
+pack-assets/
