@@ -42,6 +42,7 @@ public class ResourcePackGenerator {
         if (!Files.exists(workingDirectory)) {
             Files.createDirectory(workingDirectory);
         }
+        // TODO: the working directory doesn't delete its contents, should we add a task here to do so?
 
         // Generate our json files
         generateJsonComponents(gson, namespacedPath);

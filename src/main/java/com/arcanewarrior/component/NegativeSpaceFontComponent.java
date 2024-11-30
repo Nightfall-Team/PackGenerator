@@ -39,6 +39,6 @@ public class NegativeSpaceFontComponent implements JsonPackComponent {
 
     @Override
     public @NotNull Path filePath() {
-        return namespacedPath.resolve("font").resolve("default.json");
+        return namespacedPath.resolve("font").resolve("negative-spaces.json");
     }
 }
