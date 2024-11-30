@@ -8,4 +8,6 @@ public class ResourcePackConstants {
     public static final int MAX_SUPPORTED_FORMAT = 46;
 
     public static final Path WORKING_DIRECTORY = Path.of("resource-pack-build");
+
+    public static final Path SHA1_FILE = Path.of("sha1.txt");
 }
