@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.arcanewarrior"
-version = "0.1-SNAPSHOT"
+version = "0.1"
 
 repositories {
     mavenCentral()

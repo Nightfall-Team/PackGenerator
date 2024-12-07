@@ -23,6 +23,7 @@ jobs:
   build-project-and-release:
     name: Build Project and Create Release
     runs-on: ubuntu-latest
+    permissions: read-all
 
     steps:
     - uses: actions/checkout@v4
@@ -46,5 +47,5 @@ jobs:
       with:
         tag: ${{ inputs.tag }}
         name: PackGenerator-${{ inputs.tag }}
-        artifacts: 'build/libs/PackGenerator-0.1/jar'
+        artifacts: 'build/libs/PackGenerator-0.1.jar'
     
