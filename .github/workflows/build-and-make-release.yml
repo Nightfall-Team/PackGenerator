@@ -23,7 +23,8 @@ jobs:
   build-project-and-release:
     name: Build Project and Create Release
     runs-on: ubuntu-latest
-    permissions: read-all
+    permissions:
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
