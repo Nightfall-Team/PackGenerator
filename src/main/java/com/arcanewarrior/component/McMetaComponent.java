@@ -22,6 +22,11 @@ public class McMetaComponent implements JsonPackComponent {
     }
 
     @Override
+    public boolean needsToWriteUnicodeChar() {
+        return false;
+    }
+
+    @Override
     public @NotNull Path filePath() {
         return ResourcePackConstants.WORKING_DIRECTORY.resolve("pack.mcmeta");
     }

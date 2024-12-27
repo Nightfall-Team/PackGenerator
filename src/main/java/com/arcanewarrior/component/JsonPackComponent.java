@@ -15,4 +15,6 @@ public interface JsonPackComponent {
 
     @NotNull
     Path filePath();
+
+    boolean needsToWriteUnicodeChar();
 }

@@ -1,9 +1,6 @@
 package com.arcanewarrior;
 
-import com.arcanewarrior.component.CopyFileComponent;
-import com.arcanewarrior.component.JsonPackComponent;
-import com.arcanewarrior.component.McMetaComponent;
-import com.arcanewarrior.component.NegativeSpaceFontComponent;
+import com.arcanewarrior.component.*;
 import com.arcanewarrior.misc.UnicodeWorkaroundWriter;
 import com.google.gson.FormattingStyle;
 import com.google.gson.Gson;
@@ -36,7 +33,8 @@ public class ResourcePackGenerator {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         // Create working directory
         Path workingDirectory = ResourcePackConstants.WORKING_DIRECTORY;
-        Path namespacedPath = workingDirectory.resolve(namespace);
+        Path namespacedPath = workingDirectory.resolve("assets").resolve(namespace);
+        Path namespacedSource = ResourcePackConstants.PACK_ASSETS_FOLDER.resolve("assets").resolve(namespace);
 
         // Create our working directory
         if (!Files.exists(workingDirectory)) {
@@ -47,7 +45,7 @@ public class ResourcePackGenerator {
         // Generate our json files
         generateJsonComponents(gson, namespacedPath);
         // Copy static assets from our pack assets folder
-        copyExistingFiles();
+        copyExistingFiles(namespacedSource, namespacedPath);
 
         String outputFileName = packName.endsWith(".zip") ? packName : packName + ".zip";
         Path output = Path.of(outputFileName);
@@ -79,13 +77,15 @@ public class ResourcePackGenerator {
     private void generateJsonComponents(@NotNull Gson gson, @NotNull Path namespacedPath) throws IOException {
         List<JsonPackComponent> jsonComponents = List.of(
                 new McMetaComponent(), // Pack McMeta file
-                new NegativeSpaceFontComponent(namespacedPath) // Negative Space font
+                new NegativeSpaceFontComponent(namespacedPath), // Negative Space font
+                new CustomHealthbarComponent(namespacedPath), // Custom healthbar icons
+                new MinecraftFontOverrideComponent() // Add our font providers to minecraft's default font
         );
         for (JsonPackComponent jsonPackComponent : jsonComponents) {
             Path filePath = jsonPackComponent.filePath();
             // Ensure all directories exist
             Files.createDirectories(filePath.getParent());
-            if (jsonPackComponent instanceof NegativeSpaceFontComponent) {
+            if (jsonPackComponent.needsToWriteUnicodeChar()) {
                 // Workaround for Gson issue, see UnicodeWorkaroundWriter
                 try (UnicodeWorkaroundWriter writer = new UnicodeWorkaroundWriter(filePath)) {
                     JsonWriter jsonWriter = new JsonWriter(writer);
@@ -102,10 +102,35 @@ public class ResourcePackGenerator {
         }
     }
 
-    private void copyExistingFiles() throws IOException {
+    private void copyExistingFiles(@NotNull Path namespaceSource, @NotNull Path namespacedPath) throws IOException {
         // Copy icon
-        CopyFileComponent component = new CopyFileComponent(ResourcePackConstants.PACK_ASSETS_FOLDER.resolve("pack.png"), ResourcePackConstants.WORKING_DIRECTORY.resolve("pack.png"));
-        Files.copy(component.source(), component.destination(), StandardCopyOption.REPLACE_EXISTING);
+        List<CopyFileComponent> copyFileComponents = List.of(
+                new CopyFileComponent(ResourcePackConstants.PACK_ASSETS_FOLDER.resolve("pack.png"), ResourcePackConstants.WORKING_DIRECTORY.resolve("pack.png"))
+        );
+        for (CopyFileComponent component : copyFileComponents) {
+            if (Files.exists(component.source())) {
+                Files.createDirectories(component.destination().getParent());
+                Files.copy(component.source(), component.destination(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+        // Copy file structure from the assets 'namespace' folder
+        try (var files = Files.walk(namespaceSource)) {
+            files.forEach(source -> {
+                try {
+                    Path destinationPath = namespacedPath.resolve(namespaceSource.relativize(source));
+                    if (Files.isDirectory(source)) {
+                        if (!Files.exists(destinationPath))
+                            Files.createDirectory(destinationPath);
+                    } else {
+                        Files.copy(source, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to copy existing assets over.");
+                }
+            });
+        } catch (IOException e) {
+            System.err.println("Failed to copy over pack assets. " + e.getMessage());
+        }
     }
 
     private void generateSha1(@NotNull Path zippedPackPath) throws IOException {
