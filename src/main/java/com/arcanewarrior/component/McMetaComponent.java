@@ -1,6 +1,7 @@
 package com.arcanewarrior.component;
 
 import com.arcanewarrior.ResourcePackConstants;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
@@ -15,8 +16,10 @@ public class McMetaComponent implements JsonPackComponent {
         JsonObject packDetails = new JsonObject();
         packDetails.addProperty("description", ResourcePackConstants.PACK_DESCRIPTION);
         packDetails.addProperty("pack_format", ResourcePackConstants.PACK_FORMAT);
-        String supportedFormatsString = "[" + ResourcePackConstants.PACK_FORMAT + ", " + ResourcePackConstants.MAX_SUPPORTED_FORMAT + ']';
-        packDetails.addProperty("supported_formats", supportedFormatsString);
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add(ResourcePackConstants.PACK_FORMAT);
+        jsonArray.add(ResourcePackConstants.MAX_SUPPORTED_FORMAT);
+        packDetails.add("supported_formats", jsonArray);
         root.add("pack", packDetails);
         return root;
     }

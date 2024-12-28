@@ -33,7 +33,7 @@ public class ResourcePackGenerator {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         // Create working directory
         Path workingDirectory = ResourcePackConstants.WORKING_DIRECTORY;
-        Path namespacedPath = workingDirectory.resolve("assets").resolve(namespace);
+        Path namespacedPath = ResourcePackConstants.ASSETS.resolve(namespace);
         Path namespacedSource = ResourcePackConstants.PACK_ASSETS_FOLDER.resolve("assets").resolve(namespace);
 
         // Create our working directory

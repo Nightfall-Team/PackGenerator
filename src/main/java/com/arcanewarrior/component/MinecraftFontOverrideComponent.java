@@ -16,7 +16,7 @@ public class MinecraftFontOverrideComponent implements JsonPackComponent{
         JsonArray providers = new JsonArray();
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("type", "reference");
-        jsonObject.addProperty("id", "nightfall:font/negative-spaces.json");
+        jsonObject.addProperty("id", "nightfall:negative-spaces");
         providers.add(jsonObject);
         root.add("providers", providers);
         return root;
@@ -24,7 +24,7 @@ public class MinecraftFontOverrideComponent implements JsonPackComponent{
 
     @Override
     public @NotNull Path filePath() {
-        return ResourcePackConstants.WORKING_DIRECTORY.resolve("assets/minecraft/font/default.json");
+        return ResourcePackConstants.ASSETS.resolve("minecraft/font/default.json");
     }
 
     @Override
